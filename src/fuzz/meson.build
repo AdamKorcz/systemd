@@ -20,6 +20,21 @@ executables += [
                 'sources' : files('fuzz-pe-binary.c'),
                 'dependencies' : libopenssl_cflags,
         },
+        fuzz_template + {
+                'sources' : files('fuzz-netlink-message.c', 'fuzz-netlink.c'),
+                # sd-netlink is linked statically, so that its socket calls can be wrapped, see fuzz-netlink.h
+                'link_with' : [
+                        libshared_static,
+                        libsystemd_static,
+                ],
+                'link_args' : [
+                        '-Wl,--wrap=setsockopt',
+                        '-Wl,--wrap=__setsockopt64',
+                        '-Wl,--wrap=getsockopt',
+                        '-Wl,--wrap=__getsockopt64',
+                        '-Wl,--wrap=sendto',
+                ],
+        },
 ]
 
 # The following fuzzers do not work on oss-fuzz. See #11018.
