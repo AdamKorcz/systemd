@@ -14,11 +14,11 @@ systemd_homed_sources = files(
         'homed-operation.c',
         'homed-varlink.c',
         'homed.c',
-        'user-record-sign.c',
 )
 systemd_homed_export_sources = files(
         'home-util.c',
         'user-record-password-quality.c',
+        'user-record-sign.c',
         'user-record-util.c',
 )
 
@@ -108,6 +108,11 @@ executables += [
         test_template + {
                 'sources' : files('test-homed-regression-44837.c'),
                 'type' : 'manual',
+        },
+        fuzz_template + {
+                'sources' : files('fuzz-homed-record.c'),
+                'import' : ['systemd-homed'],
+                'dependencies' : libopenssl_cflags,
         },
 ]
 
