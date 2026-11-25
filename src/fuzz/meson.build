@@ -5,6 +5,7 @@ simple_fuzzers += files(
         'fuzz-bus-label.c',
         'fuzz-calendarspec.c',
         'fuzz-catalog.c',
+        'fuzz-efi-vars.c',
         'fuzz-env-file.c',
         'fuzz-hostname-setup.c',
         'fuzz-json.c',
