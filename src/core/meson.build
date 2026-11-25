@@ -276,6 +276,13 @@ executables += [
                         libshared,
                 ],
         },
+        fuzz_template + {
+                'sources' : files('fuzz-exec-credential.c'),
+                'link_with' : [
+                        libcore,
+                        libshared,
+                ],
+        },
 ]
 
 if conf.get('SYSTEMD_MULTICALL_BINARY') != 1
