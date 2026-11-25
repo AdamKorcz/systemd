@@ -80,6 +80,25 @@ resolve_common_template = {
 resolve_test_template = test_template + resolve_common_template + {'import' : ['systemd-resolved']}
 resolve_fuzz_template = fuzz_template + resolve_common_template + {'import' : ['systemd-resolved']}
 
+# The resolved fuzzers (see resolved-fuzz-util.h) drop what resolved sends (sendmsg(), as test-dns-scope
+# does), add the sender's address to what it receives (recvmsg_safe_full()), and replace the libshared
+# functions that would ask the kernel via netlink (local_addresses(), local_gateways(), local_outbounds(),
+# in_addr_port_ifindex_name_from_string_auto()) and manager_write_resolv_conf(), which writes to
+# /run/systemd/resolve/.
+resolve_network_fuzz_template = fuzz_template + resolve_common_template + {
+        'import' : ['systemd-resolved'],
+        'link_args' : [
+                '-Wl,--wrap=sendmsg',
+                '-Wl,--wrap=__sendmsg64',
+                '-Wl,--wrap=recvmsg_safe_full',
+                '-Wl,--wrap=local_addresses',
+                '-Wl,--wrap=local_gateways',
+                '-Wl,--wrap=local_outbounds',
+                '-Wl,--wrap=manager_write_resolv_conf',
+                '-Wl,--wrap=in_addr_port_ifindex_name_from_string_auto',
+        ],
+}
+
 executables += [
         libexec_template + resolve_common_template + {
                 'name' : 'systemd-resolved',
@@ -202,6 +221,16 @@ executables += [
         },
         resolve_fuzz_template + {
                 'sources' : files('fuzz-resource-record.c'),
+        },
+        resolve_network_fuzz_template + {
+                'sources' : files('fuzz-resolved-mdns.c', 'resolved-fuzz-util.c'),
+                # resolved's mDNS sockets are AF_UNIX socketpairs, see fuzz-resolved-mdns.c
+                'link_args' : resolve_network_fuzz_template['link_args'] + [
+                        '-Wl,--wrap=socket',
+                        '-Wl,--wrap=bind',
+                        '-Wl,--wrap=setsockopt',
+                        '-Wl,--wrap=__setsockopt64',
+                ],
         },
 ]
 
