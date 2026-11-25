@@ -9,8 +9,18 @@ executables += [
                 'name' : 'systemd-pcrlock',
                 'sources' : files(
                         'pcrlock.c',
+                ),
+                'export' : files(
                         'pcrlock-firmware.c',
                 ),
+                'dependencies' : [
+                        libopenssl_cflags,
+                        tpm2_cflags,
+                ],
+        },
+        fuzz_template + {
+                'sources' : files('fuzz-pcrlock-eventlog.c'),
+                'import' : ['systemd-pcrlock'],
                 'dependencies' : [
                         libopenssl_cflags,
                         tpm2_cflags,
