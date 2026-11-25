@@ -3,6 +3,7 @@
 simple_fuzzers += files(
         'fuzz-bootspec.c',
         'fuzz-bus-label.c',
+        'fuzz-bus-server.c',
         'fuzz-calendarspec.c',
         'fuzz-catalog.c',
         'fuzz-env-file.c',
