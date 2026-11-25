@@ -253,6 +253,23 @@ executables += [
         network_fuzz_template + {
                 'sources' : files('fuzz-network-parser.c'),
         },
+        network_fuzz_template + {
+                'sources' : files('fuzz-networkd-rtnl.c', '../fuzz/fuzz-netlink.c'),
+                # sd-netlink is linked statically, so that its socket calls can be wrapped, see
+                # src/fuzz/fuzz-netlink.h
+                'link_with' : [
+                        libsystemd_network,
+                        libshared_static,
+                        libsystemd_static,
+                ],
+                'link_args' : [
+                        '-Wl,--wrap=setsockopt',
+                        '-Wl,--wrap=__setsockopt64',
+                        '-Wl,--wrap=getsockopt',
+                        '-Wl,--wrap=__getsockopt64',
+                        '-Wl,--wrap=sendto',
+                ],
+        },
 ]
 
 if conf.get('ENABLE_NETWORKD') == 1
