@@ -1,0 +1,7 @@
+[Service]
+Name=Web on %H on %a
+Type=_ipp._tcp
+Port=631
+TxtText=a=b
+TxtText=
+TxtText=c=d e

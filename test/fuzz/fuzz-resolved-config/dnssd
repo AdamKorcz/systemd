@@ -1,0 +1,9 @@
+[Service]
+Name=%H
+Type=_http._tcp
+SubType=_printer
+Port=80
+Priority=10
+Weight=20
+TxtText=path=/foo name="My Printer" empty=
+TxtData=key=AAEC flag
